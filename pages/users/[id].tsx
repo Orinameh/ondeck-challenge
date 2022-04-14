@@ -1,32 +1,14 @@
 import {useRouter} from 'next/router'
-import {useQuery, gql} from '@apollo/client'
+import {useQuery } from '@apollo/client'
+
 import Layout from 'components/Layout'
 import UserCard from 'components/UserCard'
+import { USER_QUERY } from 'queries'
+import { QueryVars, UserQueryData } from 'types'
 
-const USER_QUERY = gql`
-  query user($id: Int!) {
-    user(id: $id) {
-      id
-      name
-      bio
-      fellowship
-      avatar_url
-      projects {
-        id
-        name
-        icon_url
-      }
-    }
-  }
-`
 
-type QueryData = {
-  user: User;
-}
 
-type QueryVars = {
-  id: number;
-}
+
 
 type User = {
   id: number;
@@ -46,7 +28,7 @@ type Project = {
 export default function UserPage() {
   const {query} = useRouter()
 
-  const {data, error, loading} = useQuery<QueryData, QueryVars>(
+  const {data, error, loading} = useQuery<UserQueryData, QueryVars>(
     USER_QUERY,
     {
       skip: !query.id,
