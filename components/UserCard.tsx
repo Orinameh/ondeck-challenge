@@ -47,18 +47,18 @@ export default function UserCard({user}: Props) {
   )
 }
 
-const Avatar = styled.img`
+export const Avatar = styled.img`
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 `
 
-const Columns = styled.div`
+export const Columns = styled.div`
   display: flex;
   flex-direction: row;
   min-width: 21rem;
 `
 
-const ColumnLeft = styled.div`
+export const ColumnLeft = styled.div`
   display: flex;
   flex-direction: column;
   flex-basis: 7rem;
@@ -67,7 +67,7 @@ const ColumnLeft = styled.div`
   margin-right: 1.5rem;
 `
 
-const ColumnRight = styled.div`
+export const ColumnRight = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;

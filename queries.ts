@@ -2,17 +2,20 @@ import { gql } from "@apollo/client";
 
 
 export const FEEDS_QUERY = gql`
-  query feed{
-    feed {
-      id
-      name
-      bio
-      fellowship
-      avatar_url
-      projects {
-        id
-        name
-        icon_url
+  query feed($fellowshipType: String, $after: String){
+    feed(fellowshipType: $fellowshipType, after: $after) {
+        edges {
+        node {
+          id
+          name 
+          desc
+          type
+          avatar_url
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
       }
     }
   }
