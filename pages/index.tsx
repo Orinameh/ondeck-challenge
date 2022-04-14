@@ -1,10 +1,11 @@
 import Head from 'next/head'
-import Layout from 'components/Layout'
+import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
+
+import Layout from 'components/Layout'
 import { FEEDS_QUERY } from 'queries';
 import { Edge, PageInfo } from 'types';
 import Tabs from 'components/Tab';
-import { useState } from 'react';
 import FeedCard from '../components/FeedCard';
 
 type QueryData = {
@@ -22,14 +23,32 @@ type QueryVars = {
 const TABS = ["all", "writers", "founders", "angels" ]
 export default function Home() {
   const [tab, setTab] = useState('all')
-  const { data, error, loading } = useQuery<QueryData, QueryVars>(
+  const { data, error, loading, fetchMore } = useQuery<QueryData, QueryVars>(
     FEEDS_QUERY,
     {
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: 'network-only',
       variables: {
         fellowshipType: tab === "all" ? "" : tab
       }
     }
   )
+
+  const handleScroll = (e: any) => {
+    if(window.innerHeight + e.target.documentElement.scrollTop + 1 >=e.target.documentElement.scrollHeight) {
+      fetchMore({
+        variables: {
+          after: data?.feed.pageInfo.endCursor
+        }
+      })
+    }
+    
+}
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   if(loading && !data) {
     return (
@@ -53,6 +72,8 @@ export default function Home() {
     )
   }
 
+  
+
   return (
     <Layout>
       <Head>
@@ -61,8 +82,8 @@ export default function Home() {
       <h2>News Feed</h2>
       <Tabs TABS={TABS} tab={tab} setTab={setTab} />
       {
-        data?.feed.edges.map((edge, i) => (
-          <FeedCard feed={edge.node} />
+        data?.feed.edges.map((edge) => (
+          <FeedCard key={`${edge.node.id}-${edge.node.desc}`} feed={edge.node} />
         ))
       }
     </Layout>
