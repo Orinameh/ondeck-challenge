@@ -16,7 +16,7 @@ const Button = styled.button<{ active: boolean }>`
 
 type Props = {
   tab: string;
-  setTab: any;
+  setTab: React.Dispatch<React.SetStateAction<string>>;
   TABS: string[];
 };
 const Tabs = ({ tab, setTab, TABS }: Props) => {

@@ -1,13 +1,13 @@
 import { gql } from "@apollo/client";
 
-
 export const FEEDS_QUERY = gql`
-  query feed($fellowshipType: String, $after: String){
+  query feed($fellowshipType: String, $after: String) {
     feed(fellowshipType: $fellowshipType, after: $after) {
-        edges {
+      edges {
+        cursor
         node {
           id
-          name 
+          name
           desc
           type
           avatar_url
@@ -19,7 +19,7 @@ export const FEEDS_QUERY = gql`
       }
     }
   }
-`
+`;
 
 export const PROJECT_QUERY = gql`
   query project($id: Int!) {

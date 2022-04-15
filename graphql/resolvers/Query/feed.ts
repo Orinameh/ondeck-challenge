@@ -10,7 +10,6 @@ const generateFeedByQuery = (
   hashCursor: string | null,
   fellowshipType: string
 ): Promise<Feed[]> => {
-    
   let query: string;
   switch (fellowshipType) {
     case "writers":
@@ -80,24 +79,34 @@ export default async function feed(_root: unknown, args: Args) {
     ? Buffer.from(args.after, "base64").toString("ascii")
     : null;
 
-  let feedsArr: Feed[] = []
+  let feedsArr: Feed[] = [];
 
   try {
     feedsArr = await generateFeedByQuery(hashCursor, args?.fellowshipType);
   } catch (error) {
-      console.error(error)
-      
+    console.error(error);
   }
+
+  if (feedsArr.length === 5) {
+    hasMore = true
+    const last = feedsArr[feedsArr.length - 1].created_ts
+    next = Buffer.from(last).toString('base64')
+  }
+
 
   return {
     pageInfo: {
       endCursor: next,
-      hasNextPage: hasMore
+      hasNextPage: hasMore,
     },
-    edges: feedsArr.map(feed => {
+    edges: feedsArr.map((feed) => {
+      const cursor = Buffer.from(
+        `${feed.id}:${feed.name}:${feed.type}`
+      ).toString("base64");
       return {
-        node: feed
-      }
-    })
-  }
+        node: feed,
+        cursor,
+      };
+    }),
+  };
 }
