@@ -1,4 +1,3 @@
-import styled from 'styled-components'
 import { Feed } from 'types';
 import Card from './Card';
 import { Avatar, ColumnLeft, ColumnRight, Columns } from './UserCard';

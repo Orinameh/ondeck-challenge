@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const FEEDS_QUERY = gql`
-  query feed($fellowshipType: String, $after: String) {
-    feed(fellowshipType: $fellowshipType, after: $after) {
+  query feed($after: String, $fellowshipType: String) {
+    feed(after: $after, fellowshipType: $fellowshipType) {
       edges {
         cursor
         node {

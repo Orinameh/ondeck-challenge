@@ -24,7 +24,7 @@ const client = new ApolloClient({
           feed: {
             // Don't cache separate results based on
             // any of this field's arguments.
-            keyArgs: false,
+            keyArgs: ["fellowshipType"],
   
             // Concatenate the incoming list items with
             // the existing list items.
@@ -33,7 +33,7 @@ const client = new ApolloClient({
               const {edges, ...rest} = incoming
               let result = rest;
 
-              result.edges = [...existing?.edges, ...edges]
+              result.edges = existing ? [...existing?.edges, ...edges] : []
               
               return result;
             },

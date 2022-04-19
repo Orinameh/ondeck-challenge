@@ -1,9 +1,10 @@
+import { ApolloError } from "@apollo/client";
 import db from "graphql/db";
 import { Feed } from "types";
 
 type Args = {
-  fellowshipType: string;
   after: string;
+  fellowshipType: string;
 };
 
 const generateFeedByQuery = (
@@ -75,20 +76,24 @@ const generateFeedByQuery = (
 export default async function feed(_root: unknown, args: Args) {
   let next: string | null = null;
   let hasMore = false;
-  let hashCursor: string | null = args.after
-    ? Buffer.from(args.after, "base64").toString("ascii")
-    : null;
+  
+  let hashCursor: string | null = null;
+  
+  if(args.after) {
+    hashCursor = Buffer.from(args.after, "base64").toString("ascii")
+  }
 
   let feedsArr: Feed[] = [];
 
   try {
     feedsArr = await generateFeedByQuery(hashCursor, args?.fellowshipType);
   } catch (error) {
-    console.error(error);
+    throw new Error("Bad query");
   }
 
   if (feedsArr.length === 5) {
     hasMore = true
+    
     const last = feedsArr[feedsArr.length - 1].created_ts
     next = Buffer.from(last).toString('base64')
   }

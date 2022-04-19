@@ -23,38 +23,52 @@ type QueryVars = {
 const TABS = ["all", "writers", "founders", "angels"];
 export default function Home() {
   const [tab, setTab] = useState("all");
+  const [prevCursor, setPreviousCursor] = useState('');
   const { data, error, loading, fetchMore } = useQuery<QueryData, QueryVars>(
     FEEDS_QUERY,
     {
+      fetchPolicy: 'network-only',
       notifyOnNetworkStatusChange: true,
-      fetchPolicy: "network-only",
       variables: {
         fellowshipType: tab === "all" ? "" : tab,
       },
-    }
-  );
+    },
   
-  const handleScroll = useCallback((e: Event) => {
-    if (
-      (window.innerHeight +
-        (e.target as Document).documentElement.scrollTop +
-        1 >=
-      (e.target as Document).documentElement.scrollHeight)
-    ) {
-      fetchMore({
-        variables: {
-          after: data?.feed.pageInfo.endCursor,
-        },
-      });
-    }
-  }, []);
+  );
 
+  const nextCursor = data?.feed.pageInfo.endCursor;
+
+  const handleScroll = useCallback(
+    (e: Event) => {
+      if(prevCursor === nextCursor) {
+        return
+      }
+
+      setPreviousCursor(nextCursor as string)
+      if (
+        window.innerHeight +
+          (e.target as Document).documentElement.scrollTop +
+          1 >=
+          (e.target as Document).documentElement.scrollHeight &&
+        data?.feed.pageInfo.hasNextPage
+      ) {        
+        fetchMore({
+          variables: {
+            after: data?.feed.pageInfo.endCursor,
+          },
+        });
+      }
+    },
+    [nextCursor]
+  );
+
+  
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [handleScroll]);
 
   if (loading && !data) {
     return (
@@ -77,7 +91,7 @@ export default function Home() {
       </Layout>
     );
   }
-  
+
   return (
     <Layout>
       <Head>
